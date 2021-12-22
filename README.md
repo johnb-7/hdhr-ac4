@@ -19,6 +19,8 @@
 >### main.py
 >>- HDHR_IP - the IP address of your real HDHomerun device
 >>- HOST_IP - the IP address where hdhr-ac4 is running
+>>- DeviceID_swap - If the Device of the HDHomerun you are connecting to should be reversed. This ensures you have a unique DeviceID to prevent any collision with your physical HDHomerun device.
+
 >### hd_home_run.py
 >>Contains the ffmpeg command:
 ```
