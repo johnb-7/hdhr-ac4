@@ -54,6 +54,10 @@ class HdHomeRun:
         """Gets the hd home run channel list"""
         return requests.get(self._base_url + "/lineup.json").text
 
+    def lineup_status(self) -> str:
+        """Gets the hd home run status"""
+        return requests.get(self._base_url + "/lineup_status.json").text
+
     def tune(self, channel: str, stream_out: Request) -> None:
         """Streams channel from hdhr until device disconnects"""
         stream_in = requests.get(self._base_url + ":5004/auto/" + channel, stream=True)

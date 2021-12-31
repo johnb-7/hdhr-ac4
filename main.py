@@ -8,10 +8,19 @@ from threading import Thread
 import uvicorn
 from pydantic import BaseModel
 import json
+import re
 
 # TODO: move to config file?
+# You must configure tese two parameters for your network
 HDHR_IP = "192.168.1.161"
 HOST_IP = "192.168.1.253"
+
+# These config options are optionl
+# Set to 1 to reverse the DeviceID of the original HDHR.
+# This is needed for some systems like PLEX that track the DeviceID
+DeviceID_swap = 0
+
+# End config options, changes below this line are not required
 
 app = FastAPI()
 tune = FastAPI()
@@ -22,6 +31,11 @@ hdhr_instance = HdHomeRun(HDHR_IP)
 def get_discover():
     original = hdhr_instance.discover()
     modified = original.replace(HDHR_IP, HOST_IP)
+
+    if DeviceID_swap:
+        DID_search = re.search(r'"DeviceID":"([A-F0-9]+)"', modified)
+        if DID_search:
+             modified = re.sub(r'"DeviceID":"([A-F0-9]+)"',r'"DeviceID":"'+DID_search.group(1)[::-1]+'"', modified)
     return json.loads(modified)
 
 
@@ -39,6 +53,10 @@ def get_lineup():
             modified_json.append(entry)
     return modified_json
 
+@app.get("/lineup_status.json")
+def get_lineup_status():
+    original_json = hdhr_instance.lineup_status()
+    return json.loads(original_json)
 
 @tune.get("/auto/{channel}")
 def in_channel(channel: str, request: Request) -> Any:
