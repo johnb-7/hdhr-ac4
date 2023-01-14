@@ -12,7 +12,7 @@
 
 ## Why?
 
->This allows my HDHR5-4K to serve ATSC 3.0 programs to my Emby server with Live TV and DVR functionality. Converting audio to AC3 before Emby receives it (or other clients) allows everything to work as it always has with HDHomerun tuners.
+>This allows my HDHR5-4K to serve ATSC 3.0 programs to my Emby server(now native support?) and PLEX server with Live TV and DVR functionality. Converting audio to AC3 before the server receives it allows everything to work as it always has with HDHomerun tuners.
 
 ## Configuration 
 >Currently hardcoded in the Python scripts.
@@ -25,7 +25,7 @@
 >>Contains the ffmpeg command:
 ```
 [
-    "ffmpeg",
+    "/bin/usr/ffmpeg",
     "-nostats",
     "-hide_banner",
     "-loglevel",
@@ -38,22 +38,20 @@
     "copy",
     "-f",
     "mpegts",
-    "-async",
-    "5000",
     "-",
 ]
 ```
->>Most of the command should remain the same, but it is worth noting I had to add the "-async 5000" argument to fix the audio skipping from Atlanta's ATSC 3.0 programs. Use ffmpeg to play around with your ATSC 3.0 programs until you find something that works before changing anything here
+>>This should not need to be changed, but can be modified if the ATSC 3.0 streams needs specifi ffmpeg handling.
 
 ## Build Docker Container
+>Download the latest Emby installer from https://emby.media/linux-server.html and save it in the docker build directory. Update Dockerfile to point to the file.
 >Example Dockerfile build command:
 
 >`docker build -f Dockerfile -t hdhr-ac4 .`
 
->This build takes a while since it builds ffmpeg from scratch.
->1. Builds ffmpeg branch with experimental AC4 support in an Ubuntu Docker container. Please note the ffmpeg source is not included in this repository, but is downloaded from here during the build: https://github.com/richardpl/FFmpeg/tree/ac4
->2. Large portions of the Dockerfiles that builds ffmpeg originated from Julien Rottenberg and where modified to suit this project: https://github.com/jrottenberg/ffmpeg Apache 2.0 License attached.
->3. An empty Ubuntu container is created and the ffmpeg binaries copied in. Python is installed and a few python modules added. The 2 python files are copied over and the launch command is set.
+>This build is much quick since we just use the ffmpeg from Emby. The original version built ffmpeg from scratch. Quick explanation for the docker build that is based on ubuntu 20:
+>1. The ffmpeg container extracts Emby installer
+>2. The final container copies ffmpeg binaries. Python is installed and a few python modules added. The 2 python files are copied over and the launch command is set.
 
 ## Run Docker container
 >Example container run command:
@@ -69,19 +67,18 @@
 >>>2. replaces the ATSC3=1 entry with AudioCodec=AC3
 >>>3. strips out all non ATSC3 programs
 >>- http://HOST:5004/auto/{program} - forwards the request to the real HDHomerun device, and then pipes the stream through ffmpeg and then back to the orignal requester
+>>- http://HOST:80/lineup_status.json - returns the same response as the real HDHomerun device
 
 ## Notes
 >- Please report issues or send pull requests here: https://github.com/johnb-7/hdhr-ac4
 >- Channel changes are a little slower due to the extra step
->- On my setup, the conversion occasionally suffers very minor pitch changes due to the audio sync correction. Hopefully, ffmpeg will get better at AC4 decoding in the future.
 >- VLC was used a lot in the early testing. Example URL for host 192.168.1.1 with program 111.1: http://192.168.1.1:5004/auto/v111.1
 >- The development container (Dockerfile-dev) is very similar but does not automatically launch the application and can be mounted using your editor of choice for debugging the Python application or ffmpeg. It also installs some extra software specifically for development.
 >- We have been using this for about a week watching live TV (no recordings yet) and it has proven very reliable. On a cloudy day we can watch football for hours withuot losing the signal like we would on ATSC 1.0 programs.
->- I am intentionally not distributing ffmpeg binaries with AC4 support for legal reasons. Everything is included to build them yourself.
+>- Many thanks to the Emby team for the ffmpeg with working AC4. Since its open source software, there should not be any problems here.
 
 ## TODO
 >- Add version and a version API
->- Strip all the unused stuff from the ffmpeg build
 >- Pull configuration stuff out of Python files to a file/argument/webAPI
 >- Improve the complex streaming data pipe
 
