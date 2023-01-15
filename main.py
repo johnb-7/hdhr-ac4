@@ -28,7 +28,7 @@ hdhr_instance = HdHomeRun(HDHR_IP)
 
 
 @app.get("/discover.json")
-def get_discover():
+async def get_discover():
     original = hdhr_instance.discover()
     modified = original.replace(HDHR_IP, HOST_IP)
 
@@ -40,7 +40,7 @@ def get_discover():
 
 
 @app.get("/lineup.json")
-def get_lineup():
+async def get_lineup():
     original_txt = hdhr_instance.lineup()
     modified_txt = original_txt.replace(HDHR_IP, HOST_IP).replace(
         '"ATSC3":1', '"AudioCodec":"AC3"'
@@ -54,16 +54,17 @@ def get_lineup():
     return modified_json
 
 @app.get("/lineup_status.json")
-def get_lineup_status():
+async def get_lineup_status():
     original_json = hdhr_instance.lineup_status()
     return json.loads(original_json)
 
 @tune.get("/auto/{channel}")
-def in_channel(channel: str, request: Request) -> Any:
+async def in_channel(channel: str, request: Request) -> Any:
     return hdhr_instance.tune(channel, request)
 
 
 if __name__ == "__main__":
+    # only for dev, prod runs through uvicorn command line 
     app_thread = Thread(
         target=uvicorn.run, kwargs={"app": app, "port": 80, "host": "0.0.0.0"}
     )

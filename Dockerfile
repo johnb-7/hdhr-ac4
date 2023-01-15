@@ -34,4 +34,4 @@ COPY --from=ffmpeg /home/opt/emby-server/extra/lib/libdrm.so.* /usr/lib/
 COPY --from=ffmpeg /home/opt/emby-server/extra/lib/libmfx.so.* /usr/lib/
 COPY --from=ffmpeg /home/opt/emby-server/extra/lib/libOpenCL.so.* /usr/lib/
 
-CMD [ "python3", "./main.py" ]
+CMD ["/bin/bash", "-c", "uvicorn main:app --host 0.0.0.0 --port 80 --workers 2 & uvicorn main:tune --host 0.0.0.0 --port 5004 --workers 4"]
