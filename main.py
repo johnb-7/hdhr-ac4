@@ -9,22 +9,37 @@ import uvicorn
 from pydantic import BaseModel
 import json
 import re
+import os
+import sys
 
-# TODO: move to config file?
-# You must configure tese two parameters for your network
-HDHR_IP = "192.168.1.161"
-HOST_IP = "192.168.1.253"
+# These must be declared in the docker or shell environment
+HDHR_IP = os.getenv("HDHR_IP")
+HOST_IP = os.getenv("HOST_IP")
+if HDHR_IP is None or HOST_IP is None:
+    print("ERROR: missing HDHR_IP or HOSTIP")
+    sys.exit(1)
 
 # These config options are optionl
 # Set to 1 to reverse the DeviceID of the original HDHR.
 # This is needed for some systems like PLEX that track the DeviceID
-DeviceID_swap = 0
-
-# End config options, changes below this line are not required
+try:
+    DeviceID_swap = int(os.getenv("DEVICEID_SWAP"))
+except:
+    print("WARN: Default DeviceID_swap = 0")
+    DeviceID_swap = 0
 
 app = FastAPI()
 tune = FastAPI()
 hdhr_instance = HdHomeRun(HDHR_IP)
+
+
+@app.get("/")
+async def get_info():
+    return {
+        "application": "hdhr-ac4",
+        "version": "1.5.0",
+        "website": "https://github.com/johnb-7/hdhr-ac4",
+    }
 
 
 @app.get("/discover.json")
@@ -35,7 +50,11 @@ async def get_discover():
     if DeviceID_swap:
         DID_search = re.search(r'"DeviceID":"([A-F0-9]+)"', modified)
         if DID_search:
-             modified = re.sub(r'"DeviceID":"([A-F0-9]+)"',r'"DeviceID":"'+DID_search.group(1)[::-1]+'"', modified)
+            modified = re.sub(
+                r'"DeviceID":"([A-F0-9]+)"',
+                r'"DeviceID":"' + DID_search.group(1)[::-1] + '"',
+                modified,
+            )
     return json.loads(modified)
 
 
@@ -53,10 +72,12 @@ async def get_lineup():
             modified_json.append(entry)
     return modified_json
 
+
 @app.get("/lineup_status.json")
 async def get_lineup_status():
     original_json = hdhr_instance.lineup_status()
     return json.loads(original_json)
+
 
 @tune.get("/auto/{channel}")
 async def in_channel(channel: str, request: Request) -> Any:
@@ -64,7 +85,7 @@ async def in_channel(channel: str, request: Request) -> Any:
 
 
 if __name__ == "__main__":
-    # only for dev, prod runs through uvicorn command line 
+    # only for dev, prod runs through uvicorn command line
     app_thread = Thread(
         target=uvicorn.run, kwargs={"app": app, "port": 80, "host": "0.0.0.0"}
     )
