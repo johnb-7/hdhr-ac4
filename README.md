@@ -1,4 +1,4 @@
-# hdhr-ac4
+# hdhr-ac4 v1.5.0
 
 ## Description
 
@@ -48,7 +48,9 @@
 
 >`docker build -f Dockerfile -t hdhr-ac4 .`
 
->This build uses ffmpeg binary from Emby. The Emby team has a custom version of ffmpeg tha has several improvements over the original ffmpeg branch. Version 1.0.0 built the custom ffmpeg from scratch. Quick explanation for the docker build that is based on ubuntu 20:
+>This build uses ffmpeg binary from Emby. The Emby team has a custom version of ffmpeg tha has several improvements over the original ffmpeg branch. 
+>Version 1.0.0 of this docker build created the custom ffmpeg from scratch which took much longer and is a little dated at this point. 
+>A quick explanation for the docker build that is based on ubuntu 20:
 >1. The ffmpeg container extracts Emby installer
 >2. The final container copies in ffmpeg binaries. Python is installed and a few python modules added. The 2 python files are copied over and the launch command is set.
 
