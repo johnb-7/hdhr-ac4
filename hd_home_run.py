@@ -64,7 +64,7 @@ class HdHomeRun:
         if stream_in.status_code == 200:
             ffmpeg = Popen(
                 [
-                    "ffmpeg",
+                    "/usr/bin/ffmpeg",
                     "-nostats",
                     "-hide_banner",
                     "-loglevel",
@@ -77,8 +77,6 @@ class HdHomeRun:
                     "copy",
                     "-f",
                     "mpegts",
-                    "-async",
-                    "5000",
                     "-",
                 ],
                 stdout=PIPE,
