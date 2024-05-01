@@ -1,5 +1,11 @@
 # hdhr-ac4 v1.5.0
 
+## Update
+
+> **May 2024** Added docker image to GitHub Container Registry. This can be used instead of building your own. It was built using the latest repo and "emby-server-deb_4.8.0.21_amd64.deb" for ffmpeg. Click the package on the right side of the project home screen to get it. 
+
+> I have been using this with Plex DVR for quite some time. It has been rock solid and reliable. DRM has been enabled on all but one channel in Atlanta. Maybe one day DRM will be sorted out and I can get all the channels again. It was fun while it lasted.
+ 
 ## Description
 
 >This project aims to emulate an HDHomerun tuner that supplies ATSC 3.0 programs with AC3 audio.
@@ -66,8 +72,7 @@
 >>- http://HOST:80/discover.json - returns the same response as the real HDHomerun device, but substitutes the hdhr-ac4 IP address in the appropriate locations.
 >>- http://HOST:80/lineup.json - queries the real HDHomerun device for its service list and then does the following:
 >>>1. replaces all the IP addresses with the hdhr-ac4 IP address
->>>2. replaces the ATSC3=1 entry with AudioCodec=AC3
->>>3. strips out all non ATSC3 programs
+>>>2. strips out all non ATSC3 programs
 >>- http://HOST:5004/auto/{program} - forwards the request to the real HDHomerun device, and then pipes the stream through ffmpeg and then back to the orignal requester
 >>- http://HOST:80/lineup_status.json - returns the same response as the real HDHomerun device
 
@@ -78,8 +83,6 @@
 >- The development container (Dockerfile-dev) is very similar but does not automatically launch the application and can be mounted using your editor of choice for debugging the Python application or ffmpeg. It also installs some extra software specifically for development.
 >- Many thanks to the Emby team for the ffmpeg with working AC4. Since its open source software, there should not be any problems here.
 
-## TODO
->-Make official release on docker hub
 
 ## License
 >This project is release under the Apache 2.0 license
