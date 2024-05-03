@@ -2,7 +2,11 @@
 
 ## Update
 
-> **May 2024** Added docker image to GitHub Container Registry. This can be used instead of building your own. It was built using the latest repo and "emby-server-deb_4.8.0.21_amd64.deb" for ffmpeg. Click the package on the right side of the project home screen to get it. 
+> **May 2024** Added docker image to GitHub Container Registry. This can be used instead of building your own. It was built using the latest repo and "emby-server-deb_4.8.0.21_amd64.deb" for ffmpeg.
+
+>> ### Quick start:
+
+>> `docker run -p 80:80 -p 5004:5004 -e "HDHR_IP=192.168.1.1" -e "HOST_IP=192.168.1.2" -e "DEVICEID_SWAP=1" ghcr.io/johnb-7/hdhr-ac4:1.5`
 
 > I have been using this with Plex DVR for quite some time. It has been rock solid and reliable. DRM has been enabled on all but one channel in Atlanta. Maybe one day DRM will be sorted out and I can get all the channels again. It was fun while it lasted.
  
